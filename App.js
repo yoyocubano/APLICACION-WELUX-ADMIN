@@ -1,14 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Provider as PaperProvider, MD3LightTheme } from 'react-native-paper';
-import { Users, Video, Layers, FileText } from 'lucide-react-native';
-// import { Ionicons } from '@expo/vector-icons'; (Removed due to missing dependency)
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Screens
 import LoginScreen from './src/screens/LoginScreen';
@@ -24,57 +22,68 @@ import DealListScreen from './src/screens/deals/DealListScreen';
 import AddEditDealScreen from './src/screens/deals/AddEditDealScreen';
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const TopTab = createMaterialTopTabNavigator();
 
-// Theme Configuration (Lujo Moderno)
+// New Modern Theme
 const theme = {
     ...MD3LightTheme,
     colors: {
         ...MD3LightTheme.colors,
-        primary: '#D4AF37', // Gold
-        secondary: '#1a1a1a', // Black
-        background: '#FAF8F3', // Cream
+        primary: '#ecb613',
+        secondary: '#181611',
+        background: '#f8f8f6',
+        surface: '#ffffff',
     },
 };
 
-
+// Main Tabs with Top Navigation (Modern Web Style)
 function MainTabs() {
     return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                headerShown: false,
-                tabBarStyle: {
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    borderTopColor: 'rgba(212, 175, 55, 0.1)',
-                    elevation: 0,
-                    height: 85,
-                    paddingBottom: 30,
-                    paddingTop: 10,
-                },
-                tabBarActiveTintColor: '#D4AF37',
-                tabBarInactiveTintColor: '#8C8C8C',
+        <TopTab.Navigator
+            screenOptions={{
+                tabBarActiveTintColor: '#ecb613',
+                tabBarInactiveTintColor: '#897f61',
                 tabBarLabelStyle: {
-                    fontFamily: 'System',
-                    fontSize: 10,
-                    fontWeight: '600',
-                    letterSpacing: 0.5,
+                    fontSize: 12,
+                    fontWeight: '700',
                     textTransform: 'uppercase',
-                    marginTop: 4,
+                    letterSpacing: 0.5,
                 },
-                tabBarIcon: ({ focused, color, size }) => {
-                    if (route.name === 'Overview') return <FileText size={24} color={color} />;
-                    if (route.name === 'Leads') return <Users size={24} color={color} />;
-                    if (route.name === 'Content') return <Layers size={24} color={color} />;
-                    if (route.name === 'Live') return <Video size={24} color={color} />;
-                    return null;
+                tabBarStyle: {
+                    backgroundColor: '#ffffff',
+                    elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#e6e3db',
                 },
-            })}
+                tabBarIndicatorStyle: {
+                    backgroundColor: '#ecb613',
+                    height: 3,
+                },
+                tabBarPressColor: 'rgba(236, 182, 19, 0.1)',
+            }}
         >
-            <Tab.Screen name="Overview" component={DashboardScreen} />
-            <Tab.Screen name="Leads" component={LeadsScreen} />
-            <Tab.Screen name="Content" component={ContentManagerScreen} />
-            <Tab.Screen name="Live" component={StreamingScreen} />
-        </Tab.Navigator>
+            <TopTab.Screen
+                name="Overview"
+                component={DashboardScreen}
+                options={{ tabBarLabel: 'Overview' }}
+            />
+            <TopTab.Screen
+                name="Leads"
+                component={LeadsScreen}
+                options={{ tabBarLabel: 'Leads' }}
+            />
+            <TopTab.Screen
+                name="Content"
+                component={ContentManagerScreen}
+                options={{ tabBarLabel: 'Content' }}
+            />
+            <TopTab.Screen
+                name="Live"
+                component={StreamingScreen}
+                options={{ tabBarLabel: 'Live' }}
+            />
+        </TopTab.Navigator>
     );
 }
 
@@ -90,7 +99,7 @@ export default function App() {
                             initialRouteName="Login"
                             screenOptions={{
                                 headerShown: false,
-                                cardStyle: { backgroundColor: '#FFFFFF' }
+                                cardStyle: { backgroundColor: '#f8f8f6' }
                             }}
                         >
                             <Stack.Screen name="Login" component={LoginScreen} />

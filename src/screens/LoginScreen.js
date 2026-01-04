@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
     View,
     StyleSheet,
+    Image,
     KeyboardAvoidingView,
     Platform,
     TouchableOpacity,
@@ -77,13 +78,15 @@ export default function LoginScreen({ navigation }) {
                 <View style={styles.contentWrapper}>
                     {/* Logo / Header Section */}
                     <View style={styles.headerSection}>
-                        {/* Diamond Logo */}
-                        <View style={styles.logoContainer}>
-                            <Ionicons name="diamond" size={32} color={COLORS.surfaceLight} />
-                        </View>
+                        {/* Welux Logo */}
+                        <Image
+                            source={require('../../assets/logo.png')}
+                            style={styles.logo}
+                            resizeMode="contain"
+                        />
 
                         {/* Title */}
-                        <Text style={styles.title}>Welux Events</Text>
+                        <Text style={styles.title}>Welux Admin</Text>
 
                         {/* Subtitle */}
                         <Text style={styles.subtitle}>ADMINISTRATION ACCESS</Text>
@@ -215,19 +218,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 48,
     },
-    logoContainer: {
-        width: 64,
-        height: 64,
-        backgroundColor: COLORS.primary,
-        borderRadius: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 24,
-        shadowColor: COLORS.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 10,
-        elevation: 5,
+    logo: {
+        width: 180,
+        height: 60,
+        marginBottom: 40,
     },
     title: {
         fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
