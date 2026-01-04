@@ -37,7 +37,7 @@ export default function LoginScreen({ navigation }) {
             if (error) throw error;
             const storedCode = data?.value?.replace(/['"]+/g, '').trim();
 
-            if (code === storedCode || code === "lux_master_2026") {
+            if (code === storedCode) {
                 navigation.replace('Main');
             } else {
                 setError('Access Denied: Invalid Code');

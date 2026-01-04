@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Platform, Image } from 'react-native';
 import { Text, Surface } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,19 +17,30 @@ const COLORS = {
     success: '#2E7D32',
 };
 
-export default function DashboardScreen() {
+export default function DashboardScreen({ navigation }) {
     const insets = useSafeAreaInsets();
     const [refreshing, setRefreshing] = useState(false);
+    const [recentLeads, setRecentLeads] = useState([]);
     const [stats, setStats] = useState({
-        totalLeads: 128,
+        totalLeads: 0,
         streamingStatus: 'LIVE',
         systemHealth: 'Optimal',
         weeklyGrowth: '+12%'
     });
 
-    // Fetch Real Stats
+    // Dynamic Greeting based on time
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'GOOD MORNING';
+        if (hour < 18) return 'GOOD AFTERNOON';
+        if (hour < 21) return 'GOOD EVENING';
+        return 'GOOD NIGHT';
+    };
+
+    // Fetch Real Stats & Recent Activity
     useEffect(() => {
         fetchStats();
+        fetchRecentActivity();
     }, []);
 
     const fetchStats = async () => {
@@ -50,6 +61,37 @@ export default function DashboardScreen() {
         } finally {
             setRefreshing(false);
         }
+    };
+
+    const fetchRecentActivity = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('client_inquiries')
+                .select('id, name, eventType, createdAt')
+                .order('createdAt', { ascending: false })
+                .limit(3);
+
+            if (error) throw error;
+            setRecentLeads(data || []);
+        } catch (e) {
+            console.error("Recent Activity Fetch Error:", e);
+        }
+    };
+
+    const getTimeAgo = (dateString) => {
+        const now = new Date();
+        const past = new Date(dateString);
+        const diffMs = now - past;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+
+        const diffDays = Math.floor(diffHours / 24);
+        return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     };
 
     const onRefresh = () => {
@@ -84,7 +126,7 @@ export default function DashboardScreen() {
                 {/* Header */}
                 <View style={styles.header}>
                     <View>
-                        <Text style={styles.greeting}>Good Morning,</Text>
+                        <Text style={styles.greeting}>{getGreeting()},</Text>
                         <Image
                             source={{ uri: 'https://cdn.b12.io/client_media/b6a2267D/b9637656-7871-11ef-92df-0242ac110002-jpg-regular_image.jpeg' }}
                             style={{ width: 160, height: 40, resizeMode: 'contain', marginLeft: -4, marginTop: 4 }}
@@ -132,24 +174,31 @@ export default function DashboardScreen() {
                     </View>
                 </View>
 
-                {/* Recent Alerts Section */}
+                {/* Recent Activity Section */}
                 <Text style={styles.sectionTitle}>Recent Activity</Text>
                 <Surface style={styles.activityCard} elevation={1}>
-                    <View style={styles.activityItem}>
-                        <View style={styles.activityDot} />
-                        <View>
-                            <Text style={styles.activityText}>New booking request from Sophie</Text>
-                            <Text style={styles.activityTime}>2 mins ago</Text>
+                    {recentLeads.length > 0 ? (
+                        recentLeads.map((lead, index) => (
+                            <View key={lead.id}>
+                                {index > 0 && <View style={styles.divider} />}
+                                <View style={styles.activityItem}>
+                                    <View style={styles.activityDot} />
+                                    <View>
+                                        <Text style={styles.activityText}>
+                                            New {lead.eventType || 'inquiry'} from {lead.name}
+                                        </Text>
+                                        <Text style={styles.activityTime}>
+                                            {getTimeAgo(lead.createdAt)}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+                        ))
+                    ) : (
+                        <View style={styles.activityItem}>
+                            <Text style={styles.activityText}>No recent activity</Text>
                         </View>
-                    </View>
-                    <View style={styles.divider} />
-                    <View style={styles.activityItem}>
-                        <View style={[styles.activityDot, { backgroundColor: COLORS.stone }]} />
-                        <View>
-                            <Text style={styles.activityText}>System backup completed</Text>
-                            <Text style={styles.activityTime}>4 hours ago</Text>
-                        </View>
-                    </View>
+                    )}
                 </Surface>
 
             </ScrollView>

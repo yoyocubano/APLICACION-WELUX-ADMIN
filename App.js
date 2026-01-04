@@ -9,7 +9,33 @@ import { Users, Video, Layers, FileText } from 'lucide-react-native';
 // import { Ionicons } from '@expo/vector-icons'; (Removed due to missing dependency)
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// ... (Lines 11 onward unchanged)
+// Screens
+import LoginScreen from './src/screens/LoginScreen';
+import DashboardScreen from './src/screens/DashboardScreen';
+import LeadsScreen from './src/screens/LeadsScreen';
+import ContentManagerScreen from './src/screens/ContentManagerScreen';
+import StreamingScreen from './src/screens/StreamingScreen';
+import VlogListScreen from './src/screens/vlogs/VlogListScreen';
+import AddEditVlogScreen from './src/screens/vlogs/AddEditVlogScreen';
+import JobListScreen from './src/screens/jobs/JobListScreen';
+import AddEditJobScreen from './src/screens/jobs/AddEditJobScreen';
+import DealListScreen from './src/screens/deals/DealListScreen';
+import AddEditDealScreen from './src/screens/deals/AddEditDealScreen';
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+// Theme Configuration (Lujo Moderno)
+const theme = {
+    ...MD3LightTheme,
+    colors: {
+        ...MD3LightTheme.colors,
+        primary: '#D4AF37', // Gold
+        secondary: '#1a1a1a', // Black
+        background: '#FAF8F3', // Cream
+    },
+};
+
 
 function MainTabs() {
     return (
