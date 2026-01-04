@@ -44,8 +44,6 @@ export default function LoginScreen({ navigation }) {
             }
         } catch (err) {
             setError('System Connection Error');
-            // Allow mock login if DB fails
-            if (code === "lux_master_2026") navigation.replace('Main');
             console.error(err);
         } finally {
             setLoading(false);
@@ -66,7 +64,7 @@ export default function LoginScreen({ navigation }) {
 
                 {/* 1.2 Welux Events Logo */}
                 <Image
-                    source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsirCcbfrIoEKYb0h1U5YPfT0tj-6WQ4bRUtO7E5F7gEBgO9MVgBAShpzKdkHAimdytljfYeC_cB9FMcNyRH_ZYD4xTldVc4fUxF3iEPbdDSI0gQ06oHU1Lem3ph4C85BbP70kzISwZHFqlbIyx2LBMpHc9F2Llm5R5pAk6fRGr3KBvV34CVhDp_DGKH_6QHY03SuRseQk5TiTnQqcY7sSSekoEG7U510DkMarjZwrrY_10GQcyVn1nePLtgFDGVQ2YcyyiSHan58' }}
+                    source={require('../../assets/logo.png')}
                     style={styles.logo}
                 />
 

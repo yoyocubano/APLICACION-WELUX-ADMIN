@@ -54,16 +54,34 @@ export default function StreamingScreen() {
             </Text>
 
             <View style={styles.section}>
-                <Text style={styles.label}>Plataforma</Text>
-                <View style={styles.row}>
+                <Text style={styles.label}>Fuente de Emisión</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
                     <Button
                         mode={streamPlatform === 'youtube' ? 'contained' : 'outlined'}
                         onPress={() => setStreamPlatform('youtube')}
                         icon="youtube"
-                        buttonColor={streamPlatform === 'youtube' ? '#ff0000' : undefined}
+                        buttonColor={streamPlatform === 'youtube' ? '#FF0000' : undefined}
                         style={styles.btnChoice}
                     >
                         YouTube
+                    </Button>
+                    <Button
+                        mode={streamPlatform === 'twitch' ? 'contained' : 'outlined'}
+                        onPress={() => setStreamPlatform('twitch')}
+                        icon="twitch"
+                        buttonColor={streamPlatform === 'twitch' ? '#9146FF' : undefined}
+                        style={styles.btnChoice}
+                        textColor={streamPlatform === 'twitch' ? 'white' : '#9146FF'}
+                    >
+                        Twitch
+                    </Button>
+                    <Button
+                        mode={streamPlatform === 'url' ? 'contained' : 'outlined'}
+                        onPress={() => setStreamPlatform('url')}
+                        icon="link"
+                        style={styles.btnChoice}
+                    >
+                        Link / OBS
                     </Button>
                     <Button
                         mode={streamPlatform === 'custom' ? 'contained' : 'outlined'}
@@ -71,25 +89,32 @@ export default function StreamingScreen() {
                         icon="code-tags"
                         style={styles.btnChoice}
                     >
-                        Embed
+                        HTML
                     </Button>
-                </View>
+                </ScrollView>
             </View>
 
             <View style={styles.section}>
                 <TextInput
-                    label={streamPlatform === 'youtube' ? "ID del Canal o Video" : "Código Iframe"}
+                    label={
+                        streamPlatform === 'youtube' ? "Link de YouTube" :
+                            streamPlatform === 'twitch' ? "Canal de Twitch" :
+                                streamPlatform === 'url' ? "URL de Transmisión (m3u8/mp4)" :
+                                    "Código Iframe"
+                    }
                     value={channelId}
                     onChangeText={setChannelId}
                     mode="outlined"
-                    multiline={streamPlatform === 'custom'}
+                    multiline={streamPlatform === 'custom' || streamPlatform === 'url'}
                     numberOfLines={streamPlatform === 'custom' ? 4 : 1}
                     right={<TextInput.Icon icon="content-paste" />}
+                    activeOutlineColor="#D4AF37"
                 />
                 <Text style={styles.helper}>
-                    {streamPlatform === 'youtube'
-                        ? "Pega el enlace completo de YouTube y lo detectaremos."
-                        : "Pega el código HTML completo del iframe."}
+                    {streamPlatform === 'youtube' ? "Ej: https://youtube.com/watch?v=..." :
+                        streamPlatform === 'twitch' ? "Ej: ibai" :
+                            streamPlatform === 'url' ? "Ej: https://mi-servidor.com/stream.m3u8 (OBS)" :
+                                "Pega el código <iframe src='...'></iframe> completo."}
                 </Text>
             </View>
 

@@ -17,8 +17,8 @@ const MOCK_CONFIG = {
 
 // -------------------------------
 
-const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || "https://placeholder-project.supabase.co";
-const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey || "placeholder-key";
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || Constants.expoConfig?.extra?.supabaseUrl || "https://placeholder-project.supabase.co";
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || Constants.expoConfig?.extra?.supabaseAnonKey || "placeholder-key";
 
 // Helper to simulate network delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

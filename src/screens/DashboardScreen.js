@@ -27,11 +27,33 @@ export default function DashboardScreen() {
         weeklyGrowth: '+12%'
     });
 
-    // Simulator for refresh
-    const onRefresh = async () => {
+    // Fetch Real Stats
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
+    const fetchStats = async () => {
         setRefreshing(true);
-        // In real app, fetch counts here
-        setTimeout(() => setRefreshing(false), 1500);
+        try {
+            const { count, error } = await supabase
+                .from('client_inquiries')
+                .select('*', { count: 'exact', head: true });
+
+            if (error) throw error;
+
+            setStats(prev => ({
+                ...prev,
+                totalLeads: count || 0
+            }));
+        } catch (e) {
+            console.error("Dashboard Fetch Error:", e);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    const onRefresh = () => {
+        fetchStats();
     };
 
     const StatCard = ({ title, value, subtext, icon, color }) => (

@@ -30,9 +30,9 @@ export default function LeadsScreen() {
     const fetchLeads = async () => {
         try {
             const { data, error } = await supabase
-                .from('leads')
+                .from('client_inquiries')
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('createdAt', { ascending: false });
 
             if (error) throw error;
             setLeads(data || []);
@@ -82,7 +82,7 @@ export default function LeadsScreen() {
 
     const renderItem = ({ item }) => {
         const isExpanded = expandedId === item.id;
-        const dateStr = new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const dateStr = new Date(item.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
         return (
             <View style={styles.cardContainer}>
@@ -99,7 +99,7 @@ export default function LeadsScreen() {
                         <View style={styles.rowBetween}>
                             <View>
                                 <Text style={styles.clientName}>{item.name}</Text>
-                                <Text style={styles.eventType}>{item.event_type || "Consulta General"}</Text>
+                                <Text style={styles.eventType}>{item.eventType || "Consulta General"}</Text>
                             </View>
                             <View style={{ alignItems: 'flex-end' }}>
                                 <Text style={styles.dateText}>{dateStr}</Text>
