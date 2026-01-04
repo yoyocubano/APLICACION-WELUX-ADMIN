@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Provider as PaperProvider, MD3LightTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,8 +20,10 @@ import AddEditJobScreen from './src/screens/jobs/AddEditJobScreen';
 import DealListScreen from './src/screens/deals/DealListScreen';
 import AddEditDealScreen from './src/screens/deals/AddEditDealScreen';
 
+// Custom Tabs Component
+import CustomTabNavigator from './src/components/CustomTabNavigator';
+
 const Stack = createStackNavigator();
-const TopTab = createMaterialTopTabNavigator();
 
 // New Modern Theme
 const theme = {
@@ -36,55 +37,9 @@ const theme = {
     },
 };
 
-// Main Tabs with Top Navigation (Modern Web Style)
+// Main Tabs using Custom Navigator
 function MainTabs() {
-    return (
-        <TopTab.Navigator
-            screenOptions={{
-                tabBarActiveTintColor: '#ecb613',
-                tabBarInactiveTintColor: '#897f61',
-                tabBarLabelStyle: {
-                    fontSize: 12,
-                    fontWeight: '700',
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.5,
-                },
-                tabBarStyle: {
-                    backgroundColor: '#ffffff',
-                    elevation: 0,
-                    shadowOpacity: 0,
-                    borderBottomWidth: 1,
-                    borderBottomColor: '#e6e3db',
-                },
-                tabBarIndicatorStyle: {
-                    backgroundColor: '#ecb613',
-                    height: 3,
-                },
-                tabBarPressColor: 'rgba(236, 182, 19, 0.1)',
-            }}
-        >
-            <TopTab.Screen
-                name="Overview"
-                component={DashboardScreen}
-                options={{ tabBarLabel: 'Overview' }}
-            />
-            <TopTab.Screen
-                name="Leads"
-                component={LeadsScreen}
-                options={{ tabBarLabel: 'Leads' }}
-            />
-            <TopTab.Screen
-                name="Content"
-                component={ContentManagerScreen}
-                options={{ tabBarLabel: 'Content' }}
-            />
-            <TopTab.Screen
-                name="Live"
-                component={StreamingScreen}
-                options={{ tabBarLabel: 'Live' }}
-            />
-        </TopTab.Navigator>
-    );
+    return <CustomTabNavigator />;
 }
 
 export default function App() {
