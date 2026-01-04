@@ -1,7 +1,7 @@
 
 import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
-import Constants from 'expo-constants';
+// import Constants from 'expo-constants'; (Removed to avoid install issues)
 
 // --- MOCK DATA FOR DEMO MODE ---
 const MOCK_LEADS = [
@@ -17,8 +17,8 @@ const MOCK_CONFIG = {
 
 // -------------------------------
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || Constants.expoConfig?.extra?.supabaseUrl || "https://placeholder-project.supabase.co";
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || Constants.expoConfig?.extra?.supabaseAnonKey || "placeholder-key";
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || "https://placeholder-project.supabase.co";
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
 
 // Helper to simulate network delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
