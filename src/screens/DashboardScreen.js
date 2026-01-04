@@ -94,8 +94,13 @@ export default function DashboardScreen({ navigation }) {
         return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     };
 
+    const handleLogout = () => {
+        navigation.replace('Login');
+    };
+
     const onRefresh = () => {
         fetchStats();
+        fetchRecentActivity();
     };
 
     const StatCard = ({ title, value, subtext, icon, color }) => (
@@ -132,8 +137,8 @@ export default function DashboardScreen({ navigation }) {
                             style={{ width: 160, height: 40, resizeMode: 'contain', marginLeft: -4, marginTop: 4 }}
                         />
                     </View>
-                    <TouchableOpacity style={styles.profileBtn}>
-                        <Ionicons name="person" size={20} color={COLORS.gold} />
+                    <TouchableOpacity style={styles.profileBtn} onPress={handleLogout}>
+                        <Ionicons name="log-out-outline" size={24} color={COLORS.gold} />
                     </TouchableOpacity>
                 </View>
 
