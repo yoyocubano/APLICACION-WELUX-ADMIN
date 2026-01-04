@@ -5,6 +5,17 @@ Bienvenido al panel de control de Welux Events. Esta aplicación te permite gest
 
 ---
 
+## 🔑 ATAJO SECRETO - Acceso Rápido desde la Web
+
+**Combinación de Teclas Mágica:**
+- **Mac:** `Cmd + Shift + L`
+- **Windows/Linux:** `Ctrl + Shift + L`
+
+Cuando estés en **weluxevents.com**, presiona esta combinación para acceder instantáneamente al panel Admin.
+Este atajo **solo tú lo conoces** y realiza login automático.
+
+---
+
 ## 1. Acceso (Login) 🔐
 Para entrar en la aplicación, necesitas el Código Maestro de Seguridad.
 *   **Código Actual:** `welux2026`
