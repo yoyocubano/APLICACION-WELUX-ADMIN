@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Image, KeyboardAvoidingView, Platform, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import { TextInput, Text, Surface } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../services/supabase';
 
 // Stitch Luxury Modern Theme Constants
@@ -38,6 +39,8 @@ export default function LoginScreen({ navigation }) {
             const storedCode = data?.value?.replace(/['"]+/g, '').trim();
 
             if (code === storedCode) {
+                // Save session for persistence
+                await AsyncStorage.setItem('welux_session', 'active');
                 navigation.replace('Main');
             } else {
                 setError('Access Denied: Invalid Code');

@@ -4,6 +4,7 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Platfor
 import { Text, Surface } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../services/supabase';
 
 // Lujo Moderno Theme
