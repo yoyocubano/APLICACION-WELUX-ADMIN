@@ -128,20 +128,46 @@ export default function DashboardScreen({ navigation }) {
 
         return (
             <TouchableOpacity
-                style={styles.statusRow}
+                style={[
+                    styles.statusRow,
+                    isAI && {
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        padding: 8,
+                        borderRadius: 12,
+                        marginVertical: 4,
+                        borderWidth: 1,
+                        borderColor: isCritical ? 'rgba(244, 67, 54, 0.3)' : 'rgba(255,255,255,0.1)'
+                    }
+                ]}
                 onPress={handlePress}
                 disabled={!isAI}
-                activeOpacity={0.7}
+                activeOpacity={0.6}
             >
-                <View style={styles.statusInfo}>
-                    <View style={[styles.statusIndicator, {
-                        backgroundColor: isOperational ? '#4CAF50' : (isCritical ? '#F44336' : '#FF9800')
-                    }]} />
-                    <Text style={styles.statusName}>{name}</Text>
+                <View>
+                    <View style={styles.statusInfo}>
+                        <View style={[styles.statusIndicator, {
+                            backgroundColor: isOperational ? '#4CAF50' : (isCritical ? '#F44336' : '#FF9800')
+                        }]} />
+                        <Text style={styles.statusName}>{name}</Text>
+                    </View>
+                    {isAI && (
+                        <Text style={{
+                            fontSize: 10,
+                            color: COLORS.gold,
+                            marginLeft: 20,
+                            marginTop: 2,
+                            fontWeight: 'bold',
+                            letterSpacing: 0.5
+                        }}>
+                            {isCritical ? '⚠ CREDIT EXHAUSTED - TAP TO RECHARGE' : 'TAP TO MANAGE DEEPSEEK FUNDS'}
+                        </Text>
+                    )}
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Text style={styles.statusDetails}>{details || status}</Text>
-                    {isAI && <Ionicons name="open-outline" size={12} color={COLORS.stone} />}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Text style={[styles.statusDetails, isCritical && { color: '#F44336' }]}>
+                        {details || status}
+                    </Text>
+                    {isAI && <Ionicons name="chevron-forward" size={14} color={COLORS.gold} />}
                 </View>
             </TouchableOpacity>
         );
