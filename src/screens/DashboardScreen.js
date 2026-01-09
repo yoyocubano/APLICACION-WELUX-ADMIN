@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Platform, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Platform, Image, Linking } from 'react-native';
 import { Text, Surface } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +22,7 @@ export default function DashboardScreen({ navigation }) {
     const insets = useSafeAreaInsets();
     const [refreshing, setRefreshing] = useState(false);
     const [recentLeads, setRecentLeads] = useState([]);
+    const [systemStatus, setSystemStatus] = useState(null);
     const [stats, setStats] = useState({
         totalLeads: 0,
         streamingStatus: 'LIVE',
@@ -57,8 +58,18 @@ export default function DashboardScreen({ navigation }) {
                 ...prev,
                 totalLeads: count || 0
             }));
+
+            // Fetch System Health from Cloudflare
+            const res = await fetch('https://welux-events.pages.dev/api/system-status');
+            const statusData = await res.json();
+            setSystemStatus(statusData);
+
+            if (statusData.supabase) {
+                setStats(prev => ({ ...prev, systemHealth: 'Optimal' }));
+            }
         } catch (e) {
             console.error("Dashboard Fetch Error:", e);
+            setStats(prev => ({ ...prev, systemHealth: 'Offline' }));
         } finally {
             setRefreshing(false);
         }
@@ -104,6 +115,38 @@ export default function DashboardScreen({ navigation }) {
         fetchRecentActivity();
     };
 
+    const StatusRow = ({ name, status, details }) => {
+        const isOperational = status === 'operational' || status === 'ready';
+        const isCritical = status === 'failed' || status === 'critical' || status === 'exhausted';
+        const isAI = name.includes('AI') || name.includes('DeepSeek');
+
+        const handlePress = () => {
+            if (isAI) {
+                Linking.openURL('https://platform.deepseek.com/top_up');
+            }
+        };
+
+        return (
+            <TouchableOpacity
+                style={styles.statusRow}
+                onPress={handlePress}
+                disabled={!isAI}
+                activeOpacity={0.7}
+            >
+                <View style={styles.statusInfo}>
+                    <View style={[styles.statusIndicator, {
+                        backgroundColor: isOperational ? '#4CAF50' : (isCritical ? '#F44336' : '#FF9800')
+                    }]} />
+                    <Text style={styles.statusName}>{name}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                    <Text style={styles.statusDetails}>{details || status}</Text>
+                    {isAI && <Ionicons name="open-outline" size={12} color={COLORS.stone} />}
+                </View>
+            </TouchableOpacity>
+        );
+    };
+
     const StatCard = ({ title, value, subtext, icon, color }) => (
         <Surface style={styles.card} elevation={2}>
             <View style={styles.cardHeader}>
@@ -143,8 +186,28 @@ export default function DashboardScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
 
+                {/* System Health Section (New) */}
+                <Surface style={styles.systemCard} elevation={2}>
+                    <View style={styles.cardHeader}>
+                        <Text style={styles.cardTitle}>SYSTEM PULSE</Text>
+                        <View style={styles.liveIndicator}>
+                            <View style={styles.liveDot} />
+                            <Text style={styles.liveText}>LIVE</Text>
+                        </View>
+                    </View>
+                    <View style={styles.statusList}>
+                        {systemStatus ? (
+                            systemStatus.services.map((svc, idx) => (
+                                <StatusRow key={idx} name={svc.name} status={svc.status} details={svc.details} />
+                            ))
+                        ) : (
+                            <Text style={{ color: '#888', fontStyle: 'italic' }}>Syncing with core...</Text>
+                        )}
+                    </View>
+                </Surface>
+
                 {/* Stats Grid */}
-                <View style={styles.grid}>
+                <View style={[styles.grid, { marginTop: 24 }]}>
                     <View style={styles.col}>
                         <StatCard
                             title="Total Leads"
@@ -250,109 +313,74 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(212, 175, 55, 0.3)',
     },
+    systemCard: {
+        backgroundColor: COLORS.obsidian,
+        borderRadius: 24,
+        padding: 24,
+        shadowColor: COLORS.gold,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+    },
+    cardTitle: {
+        color: COLORS.white,
+        fontSize: 12,
+        fontWeight: '900',
+        letterSpacing: 2,
+    },
+    liveIndicator: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 20,
+    },
+    liveDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#4CAF50',
+    },
+    liveText: {
+        color: '#4CAF50',
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    statusList: {
+        marginTop: 20,
+        gap: 12,
+    },
+    statusRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 4,
+    },
+    statusInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    statusIndicator: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    statusName: {
+        color: COLORS.white,
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    statusDetails: {
+        color: COLORS.stone,
+        fontSize: 12,
+        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
     grid: {
         flexDirection: 'row',
         gap: 16,
         marginBottom: 32,
-    },
-    col: {
-        flex: 1,
-        gap: 16,
-    },
-    card: {
-        backgroundColor: COLORS.white,
-        borderRadius: 20,
-        padding: 20,
-        minHeight: 160,
-        justifyContent: 'space-between',
-    },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 12,
-    },
-    iconBox: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    statValue: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        color: COLORS.obsidian,
-        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    },
-    statTitle: {
-        fontSize: 14,
-        color: COLORS.stone,
-        fontWeight: '500',
-        marginTop: 4,
-    },
-    statSub: {
-        fontSize: 12, // smaller
-        color: COLORS.success,
-        fontWeight: '700',
-        marginTop: 2,
-    },
-    badge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-        gap: 4,
-    },
-    badgeText: {
-        color: 'white',
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    dot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: 'white',
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-        fontWeight: 'bold',
-        color: COLORS.obsidian,
-        marginBottom: 16,
-    },
-    activityCard: {
-        backgroundColor: COLORS.white,
-        borderRadius: 20,
-        padding: 20,
-    },
-    activityItem: {
-        flexDirection: 'row',
-        gap: 16,
-        alignItems: 'center',
-    },
-    activityDot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: COLORS.gold,
-    },
-    activityText: {
-        fontSize: 14,
-        color: COLORS.obsidian,
-        fontWeight: '500',
-    },
-    activityTime: {
-        fontSize: 12,
-        color: COLORS.stone,
-        marginTop: 2,
-    },
-    divider: {
-        height: 1,
-        backgroundColor: '#F0F0F0',
-        marginVertical: 16,
-        marginLeft: 26,
     },
 });
